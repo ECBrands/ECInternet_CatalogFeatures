@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+	<template id="missing_image_report"
+	          label="Missing Image Report"
+	          file="missing_image_report.html"
+	          type="html"
+	          module="ECInternet_CatalogFeatures"
+	          area="adminhtml"
+	/>
+</config>

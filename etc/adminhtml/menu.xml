@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+	<menu>
+		<add id="ECInternet_CatalogFeatures::menu"
+		     title="Catalog Features"
+		     translate="title"
+		     module="ECInternet_CatalogFeatures"
+		     sortOrder="40"
+		     parent="ECInternet_Base::base"
+		     dependsOnModule="ECInternet_CatalogFeatures"
+		     resource="ECInternet_CatalogFeatures::menu" />
+
+		<add id="ECInternet_CatalogFeatures::settings"
+		     title="Settings"
+		     translate="title"
+		     module="ECInternet_CatalogFeatures"
+		     parent="ECInternet_CatalogFeatures::menu"
+		     sortOrder="10"
+		     action="adminhtml/system_config/edit/section/catalog_features"
+		     resource="ECInternet_CatalogFeatures::settings" />
+	</menu>
+</config>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+	<default>
+		<catalog_features>
+			<general>
+				<enable>1</enable>
+			</general>
+			<catalog>
+				<redirect_search_title><![CDATA[Product not found, please try one of the products below.]]></redirect_search_title>
+			</catalog>
+		</catalog_features>
+	</default>
+</config>

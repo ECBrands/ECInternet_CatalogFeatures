@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+	<!-- Remove categories from collection which have empty product collections -->
+	<event name="catalog_category_collection_load_after">
+		<observer name="ecinternet-catalogfeatures-catalog-category-collection-load-after"
+		          instance="ECInternet\CatalogFeatures\Observer\CatalogCategoryCollectionLoadAfter" />
+	</event>
+
+	<!-- Remove price blocks for guests -->
+	<event name="layout_generate_blocks_after">
+		<observer name="ecinternet-catalogfeatures-layout-generate-blocks-after"
+		          instance="ECInternet\CatalogFeatures\Observer\LayoutGenerateBlocksAfter" />
+	</event>
+</config>

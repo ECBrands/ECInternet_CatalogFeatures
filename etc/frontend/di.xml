@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+	<!-- afterGetProductUrl() - Builds direct URL to product configuration of configurable -->
+	<!-- afterGetStatus() - Redirects user to search page if product is disabled-->
+	<type name="Magento\Catalog\Model\Product">
+		<plugin name="ecinternet-catalogfeatures-magento-catalog-model-product"
+		        type="ECInternet\CatalogFeatures\Plugin\Magento\Catalog\Model\ProductPlugin" />
+	</type>
+</config>

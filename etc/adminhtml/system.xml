@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+	<system>
+		<section id="catalog_features" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+			<class>separator-top</class>
+			<label>Catalog Features</label>
+			<tab>ecinternet</tab>
+			<resource>ECInternet_CatalogFeatures::settings</resource>
+			<group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+				<label>General Configuration</label>
+				<field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Enable Module</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="debug_logging" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Enable Debug Logging</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+			</group>
+			<group id="catalog" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Catalog Settings</label>
+				<field id="hide_prices_for_guests" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Hide prices for non-logged-in users</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="hide_empty_categories" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Hide empty categories from top nav</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="redirect_to_search" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Redirect from 404 errors to a product search page when applicable.</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="redirect_search_title" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Search Title for 404 Redirect</label>
+				</field>
+				<field id="redirect_disabled_url" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Custom Redirect Path for Disabled Products (Search if empty)</label>
+				</field>
+				<field id="redirect_to_homepage" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Redirect all other unhandled 404 errors to the homepage.</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="always_apply_tierprice" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Always apply an applicable tier price when considering product pricing, and ignore any stock Magento behavior regarding base price vs tier price.</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+			</group>
+			<group id="category" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Category Settings</label>
+				<field id="redirect_single" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Redirect to product page if only one product in category.</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+			</group>
+			<group id="configurable_products" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+				<label>Configurable Product Settings</label>
+				<field id="redirect_simple_to_configurable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Redirect Simple products to Configurable parents.</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+			</group>
+			<group id="missing_image_report" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+				<label>Missing Image Report</label>
+				<field id="email_recipients" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Email Recipients</label>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Frequency</label>
+					<source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>
+					<backend_model>ECInternet\CatalogFeatures\Model\Config\CronConfig</backend_model>
+				</field>
+				<field id="dayofweek" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Day of Week</label>
+					<source_model>ECInternet\Base\Model\Config\Source\DayOfWeek</source_model>
+					<depends>
+						<field id="frequency">W</field>
+					</depends>
+				</field>
+				<field id="time" translate="label" type="time" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+				</field>
+			</group>
+		</section>
+	</system>
+</config>
