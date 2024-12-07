@@ -70,7 +70,7 @@ class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler implem
                     $requestValue = $this->baseName($request->getPathInfo());
                     $this->log('process()', ['requestValue' => $requestValue]);
 
-                    if (strpos($requestValue, '.html') !== false) {
+                    if (str_contains($requestValue, '.html')) {
                         $productName = str_replace('-', ' ', str_replace('.html', '', urldecode($requestValue)));
                         $this->log('process()', ['productName' => $productName]);
 
