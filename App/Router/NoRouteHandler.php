@@ -63,11 +63,7 @@ class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler implem
     public function process(
         RequestInterface $request
     ) {
-        $this->log('process()');
-
         if ($request instanceof HttpRequest) {
-            $this->log('process()', ['pathInfo' => $request->getPathInfo()]);
-
             try {
                 // Check if this is a product or category page and redirect to search instead.
                 if ($this->shouldRedirectToSearch()) {

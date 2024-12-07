@@ -35,17 +35,17 @@ class CronConfig extends ConfigValue
     /**
      * @var \Magento\Cron\Model\Schedule
      */
-    protected $_schedule;
+    protected $schedule;
 
     /**
      * @var \Magento\Framework\App\Config\ValueFactory
      */
-    protected $_configValueFactory;
+    protected $configValueFactory;
 
     /**
      * @var string
      */
-    protected $_runModelPath = '';
+    protected $runModelPath = '';
 
     /**
      * @var \ECInternet\CatalogFeatures\Logger\Logger
@@ -78,10 +78,10 @@ class CronConfig extends ConfigValue
         string $runModelPath = '',
         array $data = []
     ) {
-        $this->_runModelPath       = $runModelPath;
-        $this->_configValueFactory = $configValueFactory;
-        $this->_schedule           = $schedule;
-        $this->logger              = $logger;
+        $this->runModelPath       = $runModelPath;
+        $this->configValueFactory = $configValueFactory;
+        $this->schedule           = $schedule;
+        $this->logger             = $logger;
 
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
     }
@@ -119,7 +119,7 @@ class CronConfig extends ConfigValue
         $cronExprString = join(' ', $cronExprArray);
 
         try {
-            $this->_configValueFactory->create()->load(
+            $this->configValueFactory->create()->load(
                 self::CRON_STRING_PATH,
                 'path'
             )->setValue(
@@ -128,17 +128,17 @@ class CronConfig extends ConfigValue
                 self::CRON_STRING_PATH
             )->save();
 
-            $this->_configValueFactory->create()->load(
+            $this->configValueFactory->create()->load(
                 self::CRON_MODEL_PATH,
                 'path'
             )->setValue(
-                $this->_runModelPath
+                $this->runModelPath
             )->setPath(
                 self::CRON_MODEL_PATH
             )->save();
 
             $this->log('afterSave() - Complete');
-        } catch (Exception $e) {
+        } catch (Exception) {
             throw new Exception("We can't save the cron expression.");
         }
 
@@ -165,7 +165,7 @@ class CronConfig extends ConfigValue
 
     private function getNumeric($value)
     {
-        return $this->_schedule->getNumeric($value);
+        return $this->schedule->getNumeric($value);
     }
 
     private function log(string $message, array $extra = [])

@@ -118,10 +118,10 @@ class ProductPlugin
                                 if ($configurableAttributes = $this->getConfigurableAttributes($parentProduct)) {
                                     if (is_array($configurableAttributes)) {
                                         /** @var \Magento\Catalog\Api\Data\ProductInterface $product */
-                                        $product = $this->productRepository->getById($productId);
-
-                                        if ($urlPairs = $this->buildConfigurableUrlPairs($product, $configurableAttributes)) {
-                                            $result = $parentProduct->getProductUrl() . '#' . implode('&amp;', $urlPairs);
+                                        if ($product = $this->productRepository->getById($productId)) {
+                                            if ($urlPairs = $this->buildConfigurableUrlPairs($product, $configurableAttributes)) {
+                                                $result = $parentProduct->getProductUrl() . '#' . implode('&amp;', $urlPairs);
+                                            }
                                         }
                                     }
                                 }
@@ -150,7 +150,7 @@ class ProductPlugin
      */
     public function afterGetStatus(
         Product $subject,
-        /* @noinspection PhpMissingParamTypeInspection PhpUnusedParameterInspection */ $result
+        /* @noinspection PhpMissingParamTypeInspection */ $result
     ) {
         if ($this->helper->isModuleEnabled()) {
             if ($this->helper->shouldRedirectToSearchFor404Pages() &&
