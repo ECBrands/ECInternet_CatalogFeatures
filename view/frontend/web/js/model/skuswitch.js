@@ -18,10 +18,12 @@ define([
                 $('div.product-info-main .sku .value').html(simpleSku);
             }
 
-            // Extract name
-            var simpleName = this.options.spConfig.names[this.simpleProduct];
-            if (simpleName !== '') {
-                $('h1.page-title .base').html(simpleName);
+            if (this.options.spConfig.names !== undefined) {
+                // Extract name
+                var simpleName = this.options.spConfig.names[this.simpleProduct];
+                if (simpleName !== '') {
+                    $('h1.page-title .base').html(simpleName);
+                }
             }
 
             // Return original value
