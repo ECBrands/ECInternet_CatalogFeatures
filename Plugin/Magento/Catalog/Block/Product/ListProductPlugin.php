@@ -20,12 +20,12 @@ class ListProductPlugin
     /**
      * @var \Magento\Framework\App\Response\Http
      */
-    private $_response;
+    private $response;
 
     /**
      * @var \ECInternet\CatalogFeatures\Helper\Data
      */
-    private $_helper;
+    private $helper;
 
     /**
      * ListProductPlugin constructor.
@@ -37,8 +37,8 @@ class ListProductPlugin
         Http $response,
         Data $helper
     ) {
-        $this->_response = $response;
-        $this->_helper   = $helper;
+        $this->response = $response;
+        $this->helper   = $helper;
     }
 
     /**
@@ -53,13 +53,13 @@ class ListProductPlugin
         /** @noinspection PhpUnusedParameterInspection */ ListProduct $subject,
         AbstractCollection $resultCollection
     ) {
-        if ($this->_helper->isModuleEnabled()) {
-            if ($this->_helper->shouldRedirectForSingleCategoryProduct()) {
+        if ($this->helper->isModuleEnabled()) {
+            if ($this->helper->shouldRedirectForSingleCategoryProduct()) {
                 if ($resultCollection->count() === 1) {
                     /** @var \Magento\Catalog\Model\Product $product */
                     $product = $resultCollection->getFirstItem();
 
-                    $this->_response->setRedirect($product->getProductUrl());
+                    $this->response->setRedirect($product->getProductUrl());
                 }
             }
         }
