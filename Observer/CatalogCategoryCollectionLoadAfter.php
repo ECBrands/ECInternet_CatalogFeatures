@@ -7,9 +7,9 @@ declare(strict_types=1);
 
 namespace ECInternet\CatalogFeatures\Observer;
 
-use Magento\Framework\Event\Observer as EventObserver;
+use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use ECInternet\CatalogFeatures\Helper\Data;
+use ECInternet\CatalogFeatures\Model\Config;
 
 /**
  * Observer for 'catalog_category_collection_load_after' event
@@ -17,19 +17,19 @@ use ECInternet\CatalogFeatures\Helper\Data;
 class CatalogCategoryCollectionLoadAfter implements ObserverInterface
 {
     /**
-     * @var \ECInternet\CatalogFeatures\Helper\Data
+     * @var \ECInternet\CatalogFeatures\Model\Config
      */
-    private $_helper;
+    private $config;
 
     /**
      * CatalogCategoryCollectionLoadAfter constructor.
      *
-     * @param \ECInternet\CatalogFeatures\Helper\Data $helper
+     * @param \ECInternet\CatalogFeatures\Model\Config $config
      */
     public function __construct(
-        Data $helper
+        Config $config
     ) {
-        $this->_helper = $helper;
+        $this->config = $config;
     }
 
     /**
@@ -40,23 +40,25 @@ class CatalogCategoryCollectionLoadAfter implements ObserverInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute(
-        EventObserver $observer
+        Observer $observer
     ) {
-        if ($this->_helper->isModuleEnabled() && $this->_helper->hideEmptyCategories()) {
-            /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection $filteredCategoryCollection */
-            $filteredCategoryCollection = $observer->getData('category_collection');
+        if ($this->config->isModuleEnabled()) {
+            if ($this->config->hideEmptyCategories()) {
+                /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection $filteredCategoryCollection */
+                $filteredCategoryCollection = $observer->getData('category_collection');
 
-            /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection $originalCategoryCollection */
-            $originalCategoryCollection = clone $filteredCategoryCollection;
+                /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection $originalCategoryCollection */
+                $originalCategoryCollection = clone $filteredCategoryCollection;
 
-            // Remove all items from the filtered one, we'll re-add the ones that aren't empty.
-            $filteredCategoryCollection->removeAllItems();
+                // Remove all items from the filtered one, we'll re-add the ones that aren't empty.
+                $filteredCategoryCollection->removeAllItems();
 
-            /** @var \Magento\Catalog\Model\Category $category */
-            foreach ($originalCategoryCollection as $category) {
-                if ($category->getProductCollection()->getSize()) {
-                    // Category isn't empty, re-add it.
-                    $filteredCategoryCollection->addItem($category);
+                /** @var \Magento\Catalog\Model\Category $category */
+                foreach ($originalCategoryCollection as $category) {
+                    if ($category->getProductCollection()->getSize()) {
+                        // Category isn't empty, re-add it.
+                        $filteredCategoryCollection->addItem($category);
+                    }
                 }
             }
         }

@@ -10,7 +10,7 @@ namespace ECInternet\CatalogFeatures\Plugin\Magento\Catalog\Block\Product;
 use Magento\Catalog\Block\Product\ListProduct;
 use Magento\Eav\Model\Entity\Collection\AbstractCollection;
 use Magento\Framework\App\Response\Http;
-use ECInternet\CatalogFeatures\Helper\Data;
+use ECInternet\CatalogFeatures\Model\Config;
 
 /**
  * Plugin for Magento\Catalog\Block\Product\ListProduct
@@ -23,22 +23,22 @@ class ListProductPlugin
     private $response;
 
     /**
-     * @var \ECInternet\CatalogFeatures\Helper\Data
+     * @var \ECInternet\CatalogFeatures\Model\Config
      */
-    private $helper;
+    private $config;
 
     /**
      * ListProductPlugin constructor.
      *
-     * @param \Magento\Framework\App\Response\Http    $response
-     * @param \ECInternet\CatalogFeatures\Helper\Data $helper
+     * @param \Magento\Framework\App\Response\Http     $response
+     * @param \ECInternet\CatalogFeatures\Model\Config $config
      */
     public function __construct(
         Http $response,
-        Data $helper
+        Config $config
     ) {
         $this->response = $response;
-        $this->helper   = $helper;
+        $this->config   = $config;
     }
 
     /**
@@ -53,8 +53,8 @@ class ListProductPlugin
         /** @noinspection PhpUnusedParameterInspection */ ListProduct $subject,
         AbstractCollection $resultCollection
     ) {
-        if ($this->helper->isModuleEnabled()) {
-            if ($this->helper->shouldRedirectForSingleCategoryProduct()) {
+        if ($this->config->isModuleEnabled()) {
+            if ($this->config->shouldRedirectForSingleCategoryProduct()) {
                 if ($resultCollection->count() === 1) {
                     /** @var \Magento\Catalog\Model\Product $product */
                     $product = $resultCollection->getFirstItem();

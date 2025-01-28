@@ -8,8 +8,8 @@ declare(strict_types=1);
 namespace ECInternet\CatalogFeatures\Plugin\Magento\Catalog\Model\Product\Type;
 
 use Magento\Catalog\Model\Product\Type\Price;
-use ECInternet\CatalogFeatures\Helper\Data;
 use ECInternet\CatalogFeatures\Logger\Logger;
+use ECInternet\CatalogFeatures\Model\Config;
 
 /**
  * Plugin for Magento\Catalog\Model\Product\Type\Price
@@ -17,27 +17,27 @@ use ECInternet\CatalogFeatures\Logger\Logger;
 class PricePlugin
 {
     /**
-     * @var \ECInternet\CatalogFeatures\Helper\Data
-     */
-    private $_helper;
-
-    /**
      * @var \ECInternet\CatalogFeatures\Logger\Logger
      */
-    private $_logger;
+    private $logger;
+
+    /**
+     * @var \ECInternet\CatalogFeatures\Model\Config
+     */
+    private $config;
 
     /**
      * PricePlugin constructor.
      *
-     * @param \ECInternet\CatalogFeatures\Helper\Data   $helper
      * @param \ECInternet\CatalogFeatures\Logger\Logger $logger
+     * @param \ECInternet\CatalogFeatures\Model\Config  $config
      */
     public function __construct(
-        Data $helper,
-        Logger $logger
+        Logger $logger,
+        Config $config
     ) {
-        $this->_helper = $helper;
-        $this->_logger = $logger;
+        $this->logger = $logger;
+        $this->config = $config;
     }
 
     /**
@@ -56,14 +56,8 @@ class PricePlugin
         /* @noinspection PhpMissingParamTypeInspection */ $product,
         /* @noinspection PhpMissingParamTypeInspection */ $qty = null
     ) {
-        $this->log('afterGetBasePrice()', [
-            'product' => $product->getSku(),
-            'qty'     => $qty,
-            'price'   => $result
-        ]);
-
-        if ($this->_helper->isModuleEnabled()) {
-            if ($this->_helper->shouldAlwaysApplyTierPrice()) {
+        if ($this->config->isModuleEnabled()) {
+            if ($this->config->shouldAlwaysApplyTierPrice()) {
                 $tierPrice = $subject->getTierPrice($qty, $product);
                 if (is_numeric($tierPrice)) {
                     $this->log("afterGetBasePrice() - Overriding Magento price of: [$result] with tierPrice: [$tierPrice]");
@@ -84,6 +78,6 @@ class PricePlugin
      */
     private function log(string $message, array $extra = [])
     {
-        $this->_logger->info('Plugin/Magento/Catalog/Model/Product/Type/PricePlugin - ' . $message, $extra);
+        $this->logger->info('Plugin/Magento/Catalog/Model/Product/Type/PricePlugin - ' . $message, $extra);
     }
 }
