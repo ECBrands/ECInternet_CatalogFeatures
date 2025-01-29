@@ -51,6 +51,9 @@ class ProductPlugin
      */
     private $urlInterface;
 
+    /**
+     * @var \ECInternet\CatalogFeatures\Helper\Data
+     */
     private $helper;
 
     /**
@@ -130,6 +133,7 @@ class ProductPlugin
             return $result;
         }
 
+        // In one client (EEPS), Product->getId() was a string /shrug
         if (!is_numeric($productId)) {
             $this->log('afterGetProductUrl() - Product->getId() returned a non-numeric value (' . $productId . ')');
             return $result;
