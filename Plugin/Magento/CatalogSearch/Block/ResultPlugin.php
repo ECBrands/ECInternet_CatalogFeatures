@@ -9,8 +9,7 @@ namespace ECInternet\CatalogFeatures\Plugin\Magento\CatalogSearch\Block;
 
 use Magento\CatalogSearch\Block\Result;
 use Magento\Framework\Phrase;
-use ECInternet\CatalogFeatures\Helper\Data;
-use ECInternet\CatalogFeatures\Logger\Logger;
+use ECInternet\CatalogFeatures\Model\Config;
 
 /**
  * Plugin for Magento\CatalogSearch\Block\Result
@@ -18,25 +17,19 @@ use ECInternet\CatalogFeatures\Logger\Logger;
 class ResultPlugin
 {
     /**
-     * @var \ECInternet\CatalogFeatures\Helper\Data
+     * @var \ECInternet\CatalogFeatures\Model\Config
      */
-    private $_helper;
+    private $config;
 
     /**
-     * @var \ECInternet\CatalogFeatures\Logger\Logger
-     */
-    private $_logger;
-
-    /**
-     * @param \ECInternet\CatalogFeatures\Helper\Data   $helper
-     * @param \ECInternet\CatalogFeatures\Logger\Logger $logger
+     * ResultPlugin constructor.
+     *
+     * @param \ECInternet\CatalogFeatures\Model\Config $config
      */
     public function __construct(
-        Data $helper,
-        Logger $logger
+        Config $config
     ) {
-        $this->_helper = $helper;
-        $this->_logger = $logger;
+        $this->config = $config;
     }
 
     /**
@@ -51,25 +44,12 @@ class ResultPlugin
         Result $subject,
         Phrase $result
     ) {
-        $this->log('afterGetSearchQueryText()', ['result' => $result]);
-
-        if ($this->_helper->isModuleEnabled()) {
-            if ($subject->getRequest()->getParam(Data::URL_PARAM_IS_404_SEARCH)) {
-                return __($this->_helper->getRedirectSearchTitle());
+        if ($this->config->isModuleEnabled()) {
+            if ($subject->getRequest()->getParam(Config::URL_PARAM_IS_404_SEARCH)) {
+                return __($this->config->getRedirectSearchTitle());
             }
         }
 
         return $result;
-    }
-
-    /**
-     * Write to extension log
-     *
-     * @param string $message
-     * @param array  $extra
-     */
-    private function log(string $message, array $extra = [])
-    {
-        $this->_logger->info('Plugin/Magento/CatalogSearch/Block/ResultPlugin - ' . $message, $extra);
     }
 }

@@ -14,7 +14,7 @@ use Magento\Framework\Pricing\Price\PriceInterface;
 use Magento\Framework\Pricing\Render\RendererPool;
 use Magento\Framework\Pricing\SaleableInterface;
 use Magento\Framework\View\Element\Template\Context;
-use ECInternet\CatalogFeatures\Helper\Data;
+use ECInternet\CatalogFeatures\Model\Config;
 
 /**
  * Pricing Render FinalPriceBox Model
@@ -22,9 +22,9 @@ use ECInternet\CatalogFeatures\Helper\Data;
 class FinalPriceBox extends \Magento\Catalog\Pricing\Render\FinalPriceBox
 {
     /**
-     * @var \ECInternet\CatalogFeatures\Helper\Data
+     * @var \ECInternet\CatalogFeatures\Model\Config
      */
-    private $_helper;
+    private $config;
 
     /**
      * FinalPriceBox constructor.
@@ -33,7 +33,7 @@ class FinalPriceBox extends \Magento\Catalog\Pricing\Render\FinalPriceBox
      * @param \Magento\Framework\Pricing\SaleableInterface                                  $saleableItem
      * @param \Magento\Framework\Pricing\Price\PriceInterface                               $price
      * @param \Magento\Framework\Pricing\Render\RendererPool                                $rendererPool
-     * @param \ECInternet\CatalogFeatures\Helper\Data                                       $helper
+     * @param \ECInternet\CatalogFeatures\Model\Config                                      $config
      * @param array                                                                         $data
      * @param \Magento\Catalog\Model\Product\Pricing\Renderer\SalableResolverInterface|null $salableResolver
      * @param \Magento\Catalog\Pricing\Price\MinimalPriceCalculatorInterface|null           $minimalPriceCalculator
@@ -43,7 +43,7 @@ class FinalPriceBox extends \Magento\Catalog\Pricing\Render\FinalPriceBox
         SaleableInterface $saleableItem,
         PriceInterface $price,
         RendererPool $rendererPool,
-        Data $helper,
+        Config $config,
         array $data = [],
         SalableResolverInterface $salableResolver = null,
         MinimalPriceCalculatorInterface $minimalPriceCalculator = null
@@ -58,7 +58,7 @@ class FinalPriceBox extends \Magento\Catalog\Pricing\Render\FinalPriceBox
             $minimalPriceCalculator
         );
 
-        $this->_helper = $helper;
+        $this->config = $config;
     }
 
     /**
@@ -80,7 +80,7 @@ class FinalPriceBox extends \Magento\Catalog\Pricing\Render\FinalPriceBox
      */
     private function shouldHidePricesForGuests()
     {
-        return $this->_helper->isModuleEnabled() && $this->_helper->hidePricesForGuests() && !$this->isLoggedIn();
+        return $this->config->isModuleEnabled() && $this->config->hidePricesForGuests() && !$this->isLoggedIn();
     }
 
     /**

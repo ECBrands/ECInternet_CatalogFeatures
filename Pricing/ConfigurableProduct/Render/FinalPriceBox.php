@@ -9,13 +9,13 @@ namespace ECInternet\CatalogFeatures\Pricing\ConfigurableProduct\Render;
 
 use Magento\Catalog\Model\Product\Pricing\Renderer\SalableResolverInterface;
 use Magento\Catalog\Pricing\Price\MinimalPriceCalculatorInterface;
+use Magento\ConfigurableProduct\Pricing\Price\ConfigurableOptionsProviderInterface;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Pricing\Price\PriceInterface;
 use Magento\Framework\Pricing\Render\RendererPool;
 use Magento\Framework\Pricing\SaleableInterface;
 use Magento\Framework\View\Element\Template\Context;
-use ECInternet\CatalogFeatures\Helper\Data;
-use Magento\ConfigurableProduct\Pricing\Price\ConfigurableOptionsProviderInterface;
+use ECInternet\CatalogFeatures\Model\Config;
 
 /**
  * Pricing Render FinalPriceBox Model
@@ -23,9 +23,9 @@ use Magento\ConfigurableProduct\Pricing\Price\ConfigurableOptionsProviderInterfa
 class FinalPriceBox extends \Magento\ConfigurableProduct\Pricing\Render\FinalPriceBox
 {
     /**
-     * @var \ECInternet\CatalogFeatures\Helper\Data
+     * @var \ECInternet\CatalogFeatures\Model\Config
      */
-    private $_helper;
+    private $config;
 
     /**
      * FinalPriceBox constructor.
@@ -37,7 +37,7 @@ class FinalPriceBox extends \Magento\ConfigurableProduct\Pricing\Render\FinalPri
      * @param \Magento\Catalog\Model\Product\Pricing\Renderer\SalableResolverInterface        $salableResolver
      * @param \Magento\Catalog\Pricing\Price\MinimalPriceCalculatorInterface                  $minimalPriceCalculator
      * @param \Magento\ConfigurableProduct\Pricing\Price\ConfigurableOptionsProviderInterface $configurableOptionsProvider
-     * @param \ECInternet\CatalogFeatures\Helper\Data                                         $helper
+     * @param \ECInternet\CatalogFeatures\Model\Config                                        $config
      * @param array                                                                           $data
      */
     public function __construct(
@@ -48,7 +48,7 @@ class FinalPriceBox extends \Magento\ConfigurableProduct\Pricing\Render\FinalPri
         SalableResolverInterface $salableResolver,
         MinimalPriceCalculatorInterface $minimalPriceCalculator,
         ConfigurableOptionsProviderInterface $configurableOptionsProvider,
-        Data $helper,
+        Config $config,
         array $data = []
     ) {
         parent::__construct(
@@ -62,7 +62,7 @@ class FinalPriceBox extends \Magento\ConfigurableProduct\Pricing\Render\FinalPri
             $data
         );
 
-        $this->_helper = $helper;
+        $this->config = $config;
     }
 
     /**
@@ -84,7 +84,7 @@ class FinalPriceBox extends \Magento\ConfigurableProduct\Pricing\Render\FinalPri
      */
     private function shouldHidePricesForGuests()
     {
-        return $this->_helper->isModuleEnabled() && $this->_helper->hidePricesForGuests() && !$this->isLoggedIn();
+        return $this->config->isModuleEnabled() && $this->config->hidePricesForGuests() && !$this->isLoggedIn();
     }
 
     /**

@@ -11,8 +11,7 @@ use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\View\LayoutInterface;
-
-use ECInternet\CatalogFeatures\Helper\Data;
+use ECInternet\CatalogFeatures\Model\Config;
 
 /**
  * Observer for 'layout_generate_blocks_after' event
@@ -22,25 +21,25 @@ class LayoutGenerateBlocksAfter implements ObserverInterface
     /**
      * @var \Magento\Customer\Model\Session
      */
-    private $_customerSession;
+    private $customerSession;
 
     /**
-     * @var \ECInternet\CatalogFeatures\Helper\Data
+     * @var \ECInternet\CatalogFeatures\Model\Config
      */
-    private $_helper;
+    private $config;
 
     /**
      * LayoutGenerateBlocksAfter constructor.
      *
-     * @param \Magento\Customer\Model\Session         $customerSession
-     * @param \ECInternet\CatalogFeatures\Helper\Data $helper
+     * @param \Magento\Customer\Model\Session          $customerSession
+     * @param \ECInternet\CatalogFeatures\Model\Config $config
      */
     public function __construct(
         CustomerSession $customerSession,
-        Data $helper
+        Config $config
     ) {
-        $this->_customerSession = $customerSession;
-        $this->_helper          = $helper;
+        $this->customerSession = $customerSession;
+        $this->config          = $config;
     }
 
     /**
@@ -51,9 +50,9 @@ class LayoutGenerateBlocksAfter implements ObserverInterface
     public function execute(
         EventObserver $observer
     ) {
-        if ($this->_helper->isModuleEnabled()) {
-            if (!$this->_customerSession->isLoggedIn()) {
-                if ($this->_helper->hidePricesForGuests()) {
+        if ($this->config->isModuleEnabled()) {
+            if (!$this->customerSession->isLoggedIn()) {
+                if ($this->config->hidePricesForGuests()) {
                     /** @var \Magento\Framework\View\Layout $layout */
                     $layout = $observer->getData('layout');
                     if (isset($layout)) {

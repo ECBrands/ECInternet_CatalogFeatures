@@ -14,6 +14,7 @@ use Magento\Framework\Filesystem\Io\File;
 use Magento\Framework\Http\PhpEnvironment\Request as HttpRequest;
 use ECInternet\CatalogFeatures\Helper\Data;
 use ECInternet\CatalogFeatures\Logger\Logger;
+use ECInternet\CatalogFeatures\Model\Config;
 use Exception;
 
 /**
@@ -24,12 +25,12 @@ class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler implem
     /**
      * @var \Magento\Framework\Filesystem\Io\File
      */
-    private $_file;
+    private $file;
 
     /**
      * @var \ECInternet\CatalogFeatures\Helper\Data
      */
-    private $_helper;
+    private $helper;
 
     /**
      * @var \ECInternet\CatalogFeatures\Logger\Logger
@@ -37,68 +38,70 @@ class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler implem
     private $logger;
 
     /**
+     * @var \ECInternet\CatalogFeatures\Model\Config
+     */
+    private $config;
+
+    /**
      * NoRouteHandler constructor.
      *
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\Filesystem\Io\File              $file
      * @param \ECInternet\CatalogFeatures\Helper\Data            $helper
      * @param \ECInternet\CatalogFeatures\Logger\Logger          $logger
+     * @param \ECInternet\CatalogFeatures\Model\Config           $config
      */
     public function __construct(
-        ScopeConfigInterface $config,
+        ScopeConfigInterface $scopeConfig,
         File $file,
         Data $helper,
-        Logger $logger
+        Logger $logger,
+        Config $config
     ) {
-        parent::__construct($config);
+        parent::__construct($scopeConfig);
 
-        $this->_file   = $file;
-        $this->_helper = $helper;
-        $this->logger  = $logger;
+        $this->file   = $file;
+        $this->helper = $helper;
+        $this->logger = $logger;
+        $this->config = $config;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function process(
         RequestInterface $request
     ) {
-        if ($request instanceof HttpRequest) {
-            try {
-                // Check if this is a product or category page and redirect to search instead.
-                if ($this->shouldRedirectToSearch()) {
-                    $requestValue = $this->baseName($request->getPathInfo());
-                    $this->log('process()', ['requestValue' => $requestValue]);
+        if (!$this->config->isModuleEnabled()) {
+            return parent::process($request);
+        }
 
-                    if (str_contains($requestValue, '.html')) {
-                        $productName = str_replace('-', ' ', str_replace('.html', '', urldecode($requestValue)));
-                        $this->log('process()', ['productName' => $productName]);
+        // Check if this is a product or category page and redirect to search instead.
+        if (!$this->config->shouldRedirectToSearchFor404Pages()) {
+            return parent::process($request);
+        }
 
-                        if (!empty($productName)) {
-                            $request->setParams(['q' => $productName, Data::URL_PARAM_IS_404_SEARCH => true]);
-                            $request->setModuleName('catalogsearch')->setControllerName('result')->setActionName('index');
+        if (!$request instanceof HttpRequest) {
+            return parent::process($request);
+        }
 
-                            return true;
-                        }
-                    }
+        try {
+            $requestValue = $this->baseName($request->getPathInfo());
+
+            if (str_contains($requestValue, '.html')) {
+                if ($productName = $this->helper->cleanRequestValue($requestValue)) {
+                    $request
+                        ->setParams(['q' => $productName, Config::URL_PARAM_IS_404_SEARCH => true])
+                        ->setModuleName('catalogsearch')
+                        ->setControllerName('result')
+                        ->setActionName('index');
+
+                    return true;
                 }
-            } catch (Exception $e) {
-                $this->log('process()', ['exception' => $e->getMessage()]);
             }
+        } catch (Exception $e) {
+            $this->log('process()', ['exception' => $e->getMessage()]);
         }
 
         // Stock behavior.
         return parent::process($request);
-    }
-
-    /**
-     * Should we redirect to the search page when a user hits a 404?
-     *
-     * @return bool
-     */
-    private function shouldRedirectToSearch()
-    {
-        return $this->_helper->isModuleEnabled() && $this->_helper->shouldRedirectToSearchFor404Pages();
     }
 
     /**
@@ -111,7 +114,7 @@ class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler implem
     private function baseName(string $path)
     {
         // TODO: Try this: https://magento.stackexchange.com/a/145724
-        $fileInfo = $this->_file->getPathInfo($path);
+        $fileInfo = $this->file->getPathInfo($path);
 
         return $fileInfo['basename'];
     }

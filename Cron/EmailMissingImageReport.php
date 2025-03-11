@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace ECInternet\CatalogFeatures\Cron;
 
-use ECInternet\CatalogFeatures\Helper\Data;
 use ECInternet\CatalogFeatures\Logger\Logger;
+use ECInternet\CatalogFeatures\Model\Config;
 
 /**
  * EmailMissingImageReport Cron
@@ -16,21 +16,27 @@ use ECInternet\CatalogFeatures\Logger\Logger;
 class EmailMissingImageReport
 {
     /**
-     * @var \ECInternet\CatalogFeatures\Helper\Data
-     */
-    private $_helper;
-
-    /**
      * @var \ECInternet\CatalogFeatures\Logger\Logger
      */
-    private $_logger;
+    private $logger;
 
+    /**
+     * @var \ECInternet\CatalogFeatures\Model\Config
+     */
+    private $config;
+
+    /**
+     * EmailMissingImageReport constructor.
+     *
+     * @param \ECInternet\CatalogFeatures\Logger\Logger $logger
+     * @param \ECInternet\CatalogFeatures\Model\Config  $config
+     */
     public function __construct(
-        Data $helper,
-        Logger $logger
+        Logger $logger,
+        Config $config
     ) {
-        $this->_helper = $helper;
-        $this->_logger = $logger;
+        $this->logger = $logger;
+        $this->config = $config;
     }
 
     /**
@@ -40,7 +46,7 @@ class EmailMissingImageReport
     {
         $this->log('execute()');
 
-        $emailRecipients = $this->_helper->getMissingImageReportRecipients();
+        $emailRecipients = $this->config->getMissingImageReportRecipients();
         if (empty($emailRecipients)) {
             $this->log('execute() - No email recipients');
 
@@ -58,6 +64,6 @@ class EmailMissingImageReport
      */
     private function log(string $message, array $extra = [])
     {
-        $this->_logger->info('Cron/EmailMissingImageReport - ' . $message, $extra);
+        $this->logger->info('Cron/EmailMissingImageReport - ' . $message, $extra);
     }
 }
