@@ -42,14 +42,4 @@
 			</argument>
 		</arguments>
 	</type>
-
-	<!-- Custom Logger -->
-	<type name="ECInternet\CatalogFeatures\Logger\Logger">
-		<arguments>
-			<argument name="name" xsi:type="string">CatalogFeatures</argument>
-			<argument name="handlers" xsi:type="array">
-				<item name="system" xsi:type="object">ECInternet\CatalogFeatures\Logger\Handler</item>
-			</argument>
-		</arguments>
-	</type>
 </config>

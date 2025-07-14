@@ -17,8 +17,8 @@ use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\App\Response\Http as HttpResponse;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
-use ECInternet\CatalogFeatures\Helper\Data;
-use ECInternet\CatalogFeatures\Logger\Logger;
+use ECInternet\CatalogFeatures\Model\Config;
+use Psr\Log\LoggerInterface;
 
 /**
  * Plugin for Magento\Catalog\Model\Product
@@ -51,12 +51,12 @@ class ProductPlugin
     private $urlInterface;
 
     /**
-     * @var \ECInternet\CatalogFeatures\Helper\Data
+     * @var \ECInternet\CatalogFeatures\Model\Config
      */
-    private $helper;
+    private $config;
 
     /**
-     * @var \ECInternet\CatalogFeatures\Logger\Logger
+     * @var \Psr\Log\LoggerInterface
      */
     private $logger;
 
@@ -68,8 +68,8 @@ class ProductPlugin
      * @param \Magento\Framework\App\Request\Http                          $request
      * @param \Magento\Framework\App\ResponseInterface                     $response
      * @param \Magento\Framework\UrlInterface                              $urlInterface
-     * @param \ECInternet\CatalogFeatures\Helper\Data                      $helper
-     * @param \ECInternet\CatalogFeatures\Logger\Logger                    $logger
+     * @param \ECInternet\CatalogFeatures\Model\Config                     $config
+     * @param \Psr\Log\LoggerInterface                                     $logger
      */
     public function __construct(
         ProductRepositoryInterface $productRepository,
@@ -77,15 +77,15 @@ class ProductPlugin
         HttpRequest $request,
         ResponseInterface $response,
         UrlInterface $urlInterface,
-        Data $helper,
-        Logger $logger
+        Config $config,
+        LoggerInterface $logger
     ) {
         $this->productRepository              = $productRepository;
         $this->catalogProductTypeConfigurable = $catalogProductTypeConfigurable;
         $this->request                        = $request;
         $this->response                       = $response;
         $this->urlInterface                   = $urlInterface;
-        $this->helper                         = $helper;
+        $this->config                         = $config;
         $this->logger                         = $logger;
     }
 
@@ -102,10 +102,10 @@ class ProductPlugin
     public function afterGetProductUrl(
         Product $subject,
         string $result,
-        /* @noinspection PhpMissingParamTypeInspection PhpUnusedParameterInspection */ $useSid = null
+        /* @noinspection PhpMissingParamTypeInspection */ /* @noInspection PhpUnusedParameterInspection */ $useSid = null
     ) {
-        if ($this->helper->isModuleEnabled()) {
-            if ($this->helper->shouldRedirectSimpleToConfigurable() && !$this->isConfigurable($subject)) {
+        if ($this->config->isModuleEnabled()) {
+            if ($this->config->shouldRedirectSimpleToConfigurable() && !$this->isConfigurable($subject)) {
                 // Cache productId
                 if ($productId = $subject->getId()) {
                     // In one client (EEPS), Product->getId() was a string /shrug
@@ -152,8 +152,8 @@ class ProductPlugin
         Product $subject,
         /* @noinspection PhpMissingParamTypeInspection PhpUnusedParameterInspection */ $result
     ) {
-        if ($this->helper->isModuleEnabled()) {
-            if ($this->helper->shouldRedirectToSearchFor404Pages() &&
+        if ($this->config->isModuleEnabled()) {
+            if ($this->config->shouldRedirectToSearchFor404Pages() &&
                 $this->isProductViewRequest() &&
                 $result == Status::STATUS_DISABLED
             ) {
@@ -163,13 +163,13 @@ class ProductPlugin
                     $this->log("afterGetStatus() - Redirecting disabled product '{$subject->getSku()}' to search.");
 
                     if ($this->response instanceof HttpResponse) {
-                        if ($this->helper->shouldRedirectToCustomPageForDisabledProducts()) {
-                            $customPath = $this->urlInterface->getUrl($this->helper->getRedirectDisabledUrlPath());
+                        if ($this->shouldRedirectToCustomPageForDisabledProducts()) {
+                            $customPath = $this->urlInterface->getUrl($this->config->getRedirectDisabledUrlPath());
                             $this->response->setRedirect($customPath)->sendResponse();
                         } else {
                             $queryParams = [
-                                'q'                           => $urlKey,
-                                Data::URL_PARAM_IS_404_SEARCH => true
+                                'q'                             => $urlKey,
+                                Config::URL_PARAM_IS_404_SEARCH => true
                             ];
 
                             $searchUrl = $this->urlInterface
@@ -290,7 +290,24 @@ class ProductPlugin
      */
     private function isProductViewRequest()
     {
-        return ($this->request->getControllerName() == 'product' && $this->request->getActionName() == 'view');
+        return (
+            $this->request->getControllerName() == 'product' &&
+            $this->request->getActionName() == 'view'
+        );
+    }
+
+    /**
+     * Should we redirect the user to a custom page for disabled products?
+     *
+     * @return bool
+     */
+    private function shouldRedirectToCustomPageForDisabledProducts()
+    {
+        if ($this->config->shouldRedirectToSearchFor404Pages()) {
+            return !empty($this->config->getRedirectDisabledUrlPath());
+        }
+
+        return false;
     }
 
     /**

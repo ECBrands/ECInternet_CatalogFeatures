@@ -5,38 +5,46 @@
  */
 declare(strict_types=1);
 
-namespace ECInternet\CatalogFeatures\Helper;
+namespace ECInternet\CatalogFeatures\Model;
 
-use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
-/**
- * Helper
- */
-class Data extends AbstractHelper
+class Config
 {
-    const CONFIG_PATH_ENABLED                         = 'catalog_features/general/enable';
+    private const CONFIG_PATH_ENABLED                         = 'catalog_features/general/enable';
 
-    const CONFIG_PATH_HIDE_PRICE_FLAG                 = 'catalog_features/catalog/hide_prices_for_guests';
+    private const CONFIG_PATH_HIDE_PRICE_FLAG                 = 'catalog_features/catalog/hide_prices_for_guests';
 
-    const CONFIG_PATH_HIDE_EMPTY_CATEGORIES           = 'catalog_features/catalog/hide_empty_categories';
+    private const CONFIG_PATH_HIDE_EMPTY_CATEGORIES           = 'catalog_features/catalog/hide_empty_categories';
 
-    const CONFIG_PATH_REDIRECT_404_PAGES              = 'catalog_features/catalog/redirect_to_search';
+    private const CONFIG_PATH_REDIRECT_404_PAGES              = 'catalog_features/catalog/redirect_to_search';
 
-    const CONFIG_PATH_REDIRECT_TITLE                  = 'catalog_features/catalog/redirect_search_title';
+    private const CONFIG_PATH_REDIRECT_TITLE                  = 'catalog_features/catalog/redirect_search_title';
 
-    const CONFIG_PATH_DISABLED_URL                    = 'catalog_features/catalog/redirect_disabled_url';
+    private const CONFIG_PATH_DISABLED_URL                    = 'catalog_features/catalog/redirect_disabled_url';
 
-    const CONFIG_PATH_REDIRECT_HOME                   = 'catalog_features/catalog/redirect_to_homepage';
+    private const CONFIG_PATH_REDIRECT_HOME                   = 'catalog_features/catalog/redirect_to_homepage';
 
-    const CONFIG_PATH_REDIRECT_SINGLE_PRODUCT         = 'catalog_features/category/redirect_single';
+    private const CONFIG_PATH_REDIRECT_SINGLE_PRODUCT         = 'catalog_features/category/redirect_single';
 
-    const CONFIG_PATH_ALWAYS_APPLY_TIERPRICE          = 'catalog_features/catalog/always_apply_tierprice';
+    private const CONFIG_PATH_ALWAYS_APPLY_TIERPRICE          = 'catalog_features/catalog/always_apply_tierprice';
 
-    const CONFIG_PATH_CONFIGURABLE_REDIRECT           = 'catalog_features/configurable_products/redirect_simple_to_configurable';
+    private const CONFIG_PATH_CONFIGURABLE_REDIRECT           = 'catalog_features/configurable_products/redirect_simple_to_configurable';
 
-    const CONFIG_PATH_MISSING_IMAGE_REPORT_RECIPIENTS = 'catalog_features/missing_image_report/email_recipients';
+    private const CONFIG_PATH_MISSING_IMAGE_REPORT_RECIPIENTS = 'catalog_features/missing_image_report/email_recipients';
 
-    const URL_PARAM_IS_404_SEARCH                     = 'is404';
+    public const URL_PARAM_IS_404_SEARCH                      = 'is404';
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    public function __construct(
+        ScopeConfigInterface $scopeConfig
+    ) {
+        $this->scopeConfig = $scopeConfig;
+    }
 
     /**
      * Is extension enabled?
@@ -144,19 +152,5 @@ class Data extends AbstractHelper
     public function getMissingImageReportRecipients()
     {
         return (string)$this->scopeConfig->getValue(self::CONFIG_PATH_MISSING_IMAGE_REPORT_RECIPIENTS);
-    }
-
-    /**
-     * Should we redirect the user to a custom page for disabled products?
-     *
-     * @return bool
-     */
-    public function shouldRedirectToCustomPageForDisabledProducts()
-    {
-        if ($this->shouldRedirectToSearchFor404Pages()) {
-            return !empty($this->getRedirectDisabledUrlPath());
-        }
-
-        return false;
     }
 }

@@ -9,7 +9,7 @@ namespace ECInternet\CatalogFeatures\Observer;
 
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
-use ECInternet\CatalogFeatures\Helper\Data;
+use ECInternet\CatalogFeatures\Model\Config;
 
 /**
  * Observer for 'catalog_category_collection_load_after' event
@@ -17,19 +17,19 @@ use ECInternet\CatalogFeatures\Helper\Data;
 class CatalogCategoryCollectionLoadAfter implements ObserverInterface
 {
     /**
-     * @var \ECInternet\CatalogFeatures\Helper\Data
+     * @var \ECInternet\CatalogFeatures\Model\Config
      */
-    private $_helper;
+    private $config;
 
     /**
      * CatalogCategoryCollectionLoadAfter constructor.
      *
-     * @param \ECInternet\CatalogFeatures\Helper\Data $helper
+     * @param \ECInternet\CatalogFeatures\Model\Config $config
      */
     public function __construct(
-        Data $helper
+        Config $config
     ) {
-        $this->_helper = $helper;
+        $this->config = $config;
     }
 
     /**
@@ -42,7 +42,7 @@ class CatalogCategoryCollectionLoadAfter implements ObserverInterface
     public function execute(
         EventObserver $observer
     ) {
-        if ($this->_helper->isModuleEnabled() && $this->_helper->hideEmptyCategories()) {
+        if ($this->config->isModuleEnabled() && $this->config->hideEmptyCategories()) {
             /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection $filteredCategoryCollection */
             $filteredCategoryCollection = $observer->getData('category_collection');
 

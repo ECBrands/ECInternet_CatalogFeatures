@@ -9,52 +9,51 @@ namespace ECInternet\CatalogFeatures\App\Router;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\App\Router\NoRouteHandlerInterface;
 use Magento\Framework\Filesystem\Io\File;
 use Magento\Framework\Http\PhpEnvironment\Request as HttpRequest;
-use ECInternet\CatalogFeatures\Helper\Data;
-use ECInternet\CatalogFeatures\Logger\Logger;
+use ECInternet\CatalogFeatures\Model\Config;
 use Exception;
+use Psr\Log\LoggerInterface;
 
 /**
  * Handler for NoRoute
  */
-class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler implements NoRouteHandlerInterface
+class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler
 {
     /**
      * @var \Magento\Framework\Filesystem\Io\File
      */
-    private $_file;
+    private $file;
 
     /**
-     * @var \ECInternet\CatalogFeatures\Helper\Data
+     * @var \ECInternet\CatalogFeatures\Model\Config
      */
-    private $_helper;
+    private $config;
 
     /**
-     * @var \ECInternet\CatalogFeatures\Logger\Logger
+     * @var \Psr\Log\LoggerInterface
      */
     private $logger;
 
     /**
      * NoRouteHandler constructor.
      *
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\Filesystem\Io\File              $file
-     * @param \ECInternet\CatalogFeatures\Helper\Data            $helper
-     * @param \ECInternet\CatalogFeatures\Logger\Logger          $logger
+     * @param \ECInternet\CatalogFeatures\Model\Config           $config
+     * @param \Psr\Log\LoggerInterface                           $logger
      */
     public function __construct(
-        ScopeConfigInterface $config,
+        ScopeConfigInterface $scopeConfig,
         File $file,
-        Data $helper,
-        Logger $logger
+        Config $config,
+        LoggerInterface $logger
     ) {
-        parent::__construct($config);
+        parent::__construct($scopeConfig);
 
-        $this->_file   = $file;
-        $this->_helper = $helper;
-        $this->logger  = $logger;
+        $this->file   = $file;
+        $this->config = $config;
+        $this->logger = $logger;
     }
 
     /**
@@ -79,7 +78,7 @@ class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler implem
                         $this->log('process()', ['productName' => $productName]);
 
                         if (!empty($productName)) {
-                            $request->setParams(['q' => $productName, Data::URL_PARAM_IS_404_SEARCH => true]);
+                            $request->setParams(['q' => $productName, Config::URL_PARAM_IS_404_SEARCH => true]);
                             $request->setModuleName('catalogsearch')->setControllerName('result')->setActionName('index');
 
                             return true;
@@ -102,7 +101,7 @@ class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler implem
      */
     private function shouldRedirectToSearch()
     {
-        return $this->_helper->isModuleEnabled() && $this->_helper->shouldRedirectToSearchFor404Pages();
+        return $this->config->isModuleEnabled() && $this->config->shouldRedirectToSearchFor404Pages();
     }
 
     /**
@@ -115,7 +114,7 @@ class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler implem
     private function baseName(string $path)
     {
         // TODO: Try this: https://magento.stackexchange.com/a/145724
-        $fileInfo = $this->_file->getPathInfo($path);
+        $fileInfo = $this->file->getPathInfo($path);
 
         return $fileInfo['basename'];
     }

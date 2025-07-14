@@ -17,38 +17,38 @@ use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Registry;
-use ECInternet\CatalogFeatures\Logger\Logger;
 use Exception;
+use Psr\Log\LoggerInterface;
 
 class CronConfig extends ConfigValue
 {
     /**
      * Cron string path
      */
-    const CRON_STRING_PATH = 'crontab/default/jobs/ecinternet_catalogfeatures_emailmissingimagereport_cronjob/schedule/cron_expr';
+    private const CRON_STRING_PATH = 'crontab/default/jobs/ecinternet_catalogfeatures_emailmissingimagereport_cronjob/schedule/cron_expr';
 
     /**
      * Cron model path
      */
-    const CRON_MODEL_PATH = 'crontab/default/jobs/ecinternet_catalogfeatures_emailmissingimagereport_cronjob/run/model';
+    private const CRON_MODEL_PATH = 'crontab/default/jobs/ecinternet_catalogfeatures_emailmissingimagereport_cronjob/run/model';
 
     /**
      * @var \Magento\Cron\Model\Schedule
      */
-    protected $_schedule;
+    protected $schedule;
 
     /**
      * @var \Magento\Framework\App\Config\ValueFactory
      */
-    protected $_configValueFactory;
+    protected $configValueFactory;
 
     /**
      * @var string
      */
-    protected $_runModelPath = '';
+    protected $runModelPath = '';
 
     /**
-     * @var \ECInternet\CatalogFeatures\Logger\Logger
+     * @var \Psr\Log\LoggerInterface
      */
     private $logger;
 
@@ -59,7 +59,7 @@ class CronConfig extends ConfigValue
      * @param \Magento\Framework\App\Cache\TypeListInterface               $cacheTypeList
      * @param \Magento\Framework\App\Config\ValueFactory                   $configValueFactory
      * @param \Magento\Cron\Model\Schedule                                 $schedule
-     * @param \ECInternet\CatalogFeatures\Logger\Logger                    $logger
+     * @param \Psr\Log\LoggerInterface                                     $logger
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
      * @param string                                                       $runModelPath
@@ -72,15 +72,15 @@ class CronConfig extends ConfigValue
         TypeListInterface $cacheTypeList,
         ValueFactory $configValueFactory,
         Schedule $schedule,
-        Logger $logger,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        LoggerInterface $logger,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         string $runModelPath = '',
         array $data = []
     ) {
-        $this->_runModelPath       = $runModelPath;
-        $this->_configValueFactory = $configValueFactory;
-        $this->_schedule           = $schedule;
+        $this->runModelPath       = $runModelPath;
+        $this->configValueFactory = $configValueFactory;
+        $this->schedule           = $schedule;
         $this->logger              = $logger;
 
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
@@ -116,10 +116,10 @@ class CronConfig extends ConfigValue
             $dayOfWeekValue, // Day of the week
         ];
 
-        $cronExprString = join(' ', $cronExprArray);
+        $cronExprString = implode(' ', $cronExprArray);
 
         try {
-            $this->_configValueFactory->create()->load(
+            $this->configValueFactory->create()->load(
                 self::CRON_STRING_PATH,
                 'path'
             )->setValue(
@@ -128,11 +128,11 @@ class CronConfig extends ConfigValue
                 self::CRON_STRING_PATH
             )->save();
 
-            $this->_configValueFactory->create()->load(
+            $this->configValueFactory->create()->load(
                 self::CRON_MODEL_PATH,
                 'path'
             )->setValue(
-                $this->_runModelPath
+                $this->runModelPath
             )->setPath(
                 self::CRON_MODEL_PATH
             )->save();
@@ -165,7 +165,7 @@ class CronConfig extends ConfigValue
 
     private function getNumeric($value)
     {
-        return $this->_schedule->getNumeric($value);
+        return $this->schedule->getNumeric($value);
     }
 
     private function log(string $message, array $extra = [])
