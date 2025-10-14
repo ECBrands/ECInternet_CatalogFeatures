@@ -23,14 +23,6 @@ class Data extends AbstractHelper
      */
     public function cleanRequestValue(string $requestValue)
     {
-        return str_replace(
-            '-',
-            ' ',
-            str_replace(
-                '.html',
-                '',
-                urldecode($requestValue)
-            )
-        );
+        return str_replace(['.html', '-'], ['', ' '], urldecode($requestValue));
     }
 }

@@ -25,12 +25,12 @@ class CronConfig extends ConfigValue
     /**
      * Cron string path
      */
-    const CRON_STRING_PATH = 'crontab/default/jobs/ecinternet_catalogfeatures_emailmissingimagereport_cronjob/schedule/cron_expr';
+    private const CRON_STRING_PATH = 'crontab/default/jobs/ecinternet_catalogfeatures_emailmissingimagereport_cronjob/schedule/cron_expr';
 
     /**
      * Cron model path
      */
-    const CRON_MODEL_PATH = 'crontab/default/jobs/ecinternet_catalogfeatures_emailmissingimagereport_cronjob/run/model';
+    private const CRON_MODEL_PATH = 'crontab/default/jobs/ecinternet_catalogfeatures_emailmissingimagereport_cronjob/run/model';
 
     /**
      * @var \Magento\Cron\Model\Schedule
@@ -132,7 +132,7 @@ class CronConfig extends ConfigValue
             $dayOfWeekValue, // Day of the week
         ];
 
-        $cronExprString = join(' ', $cronExprArray);
+        $cronExprString = implode(' ', $cronExprArray);
 
         try {
             $this->configValueFactory->create()->load(
