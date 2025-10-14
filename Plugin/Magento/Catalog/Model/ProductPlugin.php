@@ -251,10 +251,10 @@ class ProductPlugin
         $parentIds = $this->getParentIds($productId);
         if (count($parentIds) > 0) {
             // Use first result
-            $productId = $parentIds[0];
+            $firstParentId = $parentIds[0];
 
-            if (is_numeric($productId)) {
-                return $this->getProductById((int)$productId);
+            if (is_numeric($firstParentId)) {
+                return $this->getProductById((int)$firstParentId);
             }
         }
 
