@@ -20,7 +20,7 @@ use Exception;
 /**
  * Handler for NoRoute
  */
-class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler implements NoRouteHandlerInterface
+class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler
 {
     /**
      * @var \Magento\Framework\Filesystem\Io\File
