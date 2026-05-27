@@ -23,7 +23,7 @@ class UpgradeData implements UpgradeDataInterface
     /**
      * @var \Magento\Eav\Setup\EavSetupFactory
      */
-    private $_eavSetupFactory;
+    private $eavSetupFactory;
 
     /**
      * UpgradeData constructor.
@@ -33,7 +33,7 @@ class UpgradeData implements UpgradeDataInterface
     public function __construct(
         EavSetupFactory $eavSetupFactory
     ) {
-        $this->_eavSetupFactory = $eavSetupFactory;
+        $this->eavSetupFactory = $eavSetupFactory;
     }
 
     /**
@@ -55,7 +55,7 @@ class UpgradeData implements UpgradeDataInterface
 
         if (version_compare($context->getVersion(), '1.1.2', '<')) {
             /** @var \Magento\Eav\Setup\EavSetup $eavSetup */
-            $eavSetup = $this->_eavSetupFactory->create(['setup' => $setup]);
+            $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
 
             $eavSetup->addAttribute(
                 Product::ENTITY,
@@ -86,7 +86,7 @@ class UpgradeData implements UpgradeDataInterface
 
         if (version_compare($context->getVersion(), '1.1.3', '<')) {
             /** @var \Magento\Eav\Setup\EavSetup $eavSetup */
-            $eavSetup = $this->_eavSetupFactory->create(['setup' => $setup]);
+            $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
 
             $eavSetup->addAttribute(
                 Product::ENTITY,
@@ -117,7 +117,7 @@ class UpgradeData implements UpgradeDataInterface
 
         if (version_compare($context->getVersion(), '1.1.9', '<')) {
             /** @var \Magento\Eav\Setup\EavSetup $eavSetup */
-            $eavSetup = $this->_eavSetupFactory->create(['setup' => $setup]);
+            $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
 
             $eavSetup->updateAttribute(Product::ENTITY, 'allow_on_web', 'is_required', 'false');
         }
