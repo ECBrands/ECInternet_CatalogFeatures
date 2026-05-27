@@ -269,7 +269,7 @@ class ProductPlugin
                 if ($productAttribute->getAttributeId() == $configurableAttribute->getAttributeId()) {
                     $configurableAttributeCode = $productAttribute->getAttributeCode();
                     if ($product instanceof Product) {
-                        if ($product->hasData($configurableAttribute)) {
+                        if ($product->hasData($configurableAttributeCode)) {
                             $key = $configurableAttribute->getAttributeId();
                             $val = $product->getData($configurableAttributeCode);
 
