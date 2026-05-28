@@ -7,6 +7,7 @@
 - [Configuration](#configuration-header)
 - [Specifications](#specifications-header)
 - [Attributes](#attributes-header)
+- [Testing](#testing-header)
 - [Notes](#notes-header)
 - [Version History](#version-history-header)
 
@@ -33,6 +34,8 @@
 ## Attributes
 - Product - Allow On Web (`allow_on_web`)
 - Product - Seasonal (`seasonal`)
+
+## Testing
 
 ## Notes
 

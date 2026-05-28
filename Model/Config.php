@@ -40,6 +40,11 @@ class Config
      */
     private $scopeConfig;
 
+    /**
+     * Config constructor.
+     *
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     */
     public function __construct(
         ScopeConfigInterface $scopeConfig
     ) {

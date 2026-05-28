@@ -10,11 +10,11 @@
 			<group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
 				<label>General Configuration</label>
 				<field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-					<label>Enable Module</label>
+					<label>Enable module</label>
 					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
 				</field>
 				<field id="debug_logging" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
-					<label>Enable Debug Logging</label>
+					<label>Enable debug logging</label>
 					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
 				</field>
 			</group>

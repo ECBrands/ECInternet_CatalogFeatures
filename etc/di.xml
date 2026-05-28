@@ -31,6 +31,15 @@
 		        type="ECInternet\CatalogFeatures\Plugin\Magento\ConfigurableProduct\Block\Product\View\Type\ConfigurablePlugin" />
 	</type>
 
+	<!-- Custom Logger - Must be injected into each class which needs it -->
+	<virtualType name="ECInternetCatalogFeaturesLogger" type="Magento\Framework\Logger\Monolog">
+		<arguments>
+			<argument name="handlers" xsi:type="array">
+				<item name="info" xsi:type="object">ECInternet\CatalogFeatures\Logger\Handler</item>
+			</argument>
+		</arguments>
+	</virtualType>
+
 	<!-- Redirect Handler -->
 	<type name="Magento\Framework\App\Router\NoRouteHandlerList">
 		<arguments>
