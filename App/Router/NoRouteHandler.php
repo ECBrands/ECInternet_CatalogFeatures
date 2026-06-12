@@ -9,7 +9,6 @@ namespace ECInternet\CatalogFeatures\App\Router;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\App\Router\NoRouteHandlerInterface;
 use Magento\Framework\Filesystem\Io\File;
 use Magento\Framework\Http\PhpEnvironment\Request as HttpRequest;
 use ECInternet\CatalogFeatures\Helper\Data;
