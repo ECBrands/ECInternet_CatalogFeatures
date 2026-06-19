@@ -27,11 +27,6 @@ class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler
     private $file;
 
     /**
-     * @var \ECInternet\CatalogFeatures\Helper\Data
-     */
-    private $helper;
-
-    /**
      * @var \ECInternet\CatalogFeatures\Logger\Logger
      */
     private $logger;
@@ -46,21 +41,18 @@ class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler
      *
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\Filesystem\Io\File              $file
-     * @param \ECInternet\CatalogFeatures\Helper\Data            $helper
      * @param \ECInternet\CatalogFeatures\Logger\Logger          $logger
      * @param \ECInternet\CatalogFeatures\Model\Config           $config
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         File $file,
-        Data $helper,
         Logger $logger,
         Config $config
     ) {
         parent::__construct($scopeConfig);
 
         $this->file   = $file;
-        $this->helper = $helper;
         $this->logger = $logger;
         $this->config = $config;
     }
@@ -85,7 +77,7 @@ class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler
             $requestValue = $this->baseName($request->getPathInfo());
 
             if (str_contains($requestValue, '.html')) {
-                if ($productName = $this->helper->cleanRequestValue($requestValue)) {
+                if ($productName = Data::cleanRequestValue($requestValue)) {
                     $request
                         ->setParams(['q' => $productName, Config::URL_PARAM_IS_404_SEARCH => true])
                         ->setModuleName('catalogsearch')

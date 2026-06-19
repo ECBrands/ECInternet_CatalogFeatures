@@ -52,11 +52,6 @@ class ProductPlugin
     private $urlInterface;
 
     /**
-     * @var \ECInternet\CatalogFeatures\Helper\Data
-     */
-    private $helper;
-
-    /**
      * @var \ECInternet\CatalogFeatures\Logger\Logger
      */
     private $logger;
@@ -74,7 +69,6 @@ class ProductPlugin
      * @param \Magento\Framework\App\Request\Http                          $request
      * @param \Magento\Framework\App\ResponseInterface                     $response
      * @param \Magento\Framework\UrlInterface                              $urlInterface
-     * @param \ECInternet\CatalogFeatures\Helper\Data                      $helper
      * @param \ECInternet\CatalogFeatures\Logger\Logger                    $logger
      * @param \ECInternet\CatalogFeatures\Model\Config                     $config
      */
@@ -84,7 +78,6 @@ class ProductPlugin
         HttpRequest $request,
         ResponseInterface $response,
         UrlInterface $urlInterface,
-        Data $helper,
         Logger $logger,
         Config $config
     ) {
@@ -93,7 +86,6 @@ class ProductPlugin
         $this->request                        = $request;
         $this->response                       = $response;
         $this->urlInterface                   = $urlInterface;
-        $this->helper                         = $helper;
         $this->logger                         = $logger;
         $this->config                         = $config;
     }
@@ -198,7 +190,7 @@ class ProductPlugin
         }
 
         // Cleanup product 'url_key'
-        $urlKey = $this->helper->cleanRequestValue($subject->getUrlKey());
+        $urlKey = Data::cleanRequestValue($subject->getUrlKey());
 
         if (empty($urlKey)) {
             return $result;

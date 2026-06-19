@@ -7,12 +7,10 @@ declare(strict_types=1);
 
 namespace ECInternet\CatalogFeatures\Helper;
 
-use Magento\Framework\App\Helper\AbstractHelper;
-
 /**
  * Helper
  */
-class Data extends AbstractHelper
+class Data
 {
     /**
      * Urldecode request value, then replace '-' with ' ' and '.html' with ''
@@ -21,7 +19,7 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function cleanRequestValue(string $requestValue)
+    public static function cleanRequestValue(string $requestValue)
     {
         return str_replace(['.html', '-'], ['', ' '], urldecode($requestValue));
     }
