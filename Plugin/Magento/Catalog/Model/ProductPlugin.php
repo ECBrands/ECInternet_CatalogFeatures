@@ -17,6 +17,7 @@ use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\App\Response\Http as HttpResponse;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
+use ECInternet\CatalogFeatures\Helper\Data;
 use ECInternet\CatalogFeatures\Model\Config;
 use Psr\Log\LoggerInterface;
 
@@ -102,36 +103,54 @@ class ProductPlugin
     public function afterGetProductUrl(
         Product $subject,
         string $result,
-        /* @noinspection PhpMissingParamTypeInspection */ /* @noInspection PhpUnusedParameterInspection */ $useSid = null
+        /* @noinspection PhpMissingParamTypeInspection PhpUnusedParameterInspection */ $useSid = null
     ) {
-        if ($this->config->isModuleEnabled()) {
-            if ($this->config->shouldRedirectSimpleToConfigurable() && !$this->isConfigurable($subject)) {
-                // Cache productId
-                if ($productId = $subject->getId()) {
-                    // In one client (EEPS), Product->getId() was a string /shrug
-                    if (is_numeric($productId)) {
-                        // Gets array of parent productIds if this product is used as a configurable
-                        /** @var \Magento\Catalog\Api\Data\ProductInterface $parentProduct */
-                        if ($parentProduct = $this->getFirstParentProduct((int)$productId)) {
-                            if ($parentProduct instanceof Product) {
-                                // Get the attributes which make this product configurable and construct new product url
-                                if ($configurableAttributes = $this->getConfigurableAttributes($parentProduct)) {
-                                    if (is_array($configurableAttributes)) {
-                                        /** @var \Magento\Catalog\Api\Data\ProductInterface $product */
-                                        $product = $this->productRepository->getById($productId);
+        if (!$this->config->isModuleEnabled()) {
+            return $result;
+        }
 
-                                        if ($urlPairs = $this->buildConfigurableUrlPairs($product, $configurableAttributes)) {
-                                            $result = $parentProduct->getProductUrl() . '#' . implode('&amp;', $urlPairs);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        $this->log('afterGetProductUrl() - Product->getId() returned a non-numeric value (' . $productId . ')');
+        if (!$this->config->shouldRedirectSimpleToConfigurable()) {
+            return $result;
+        }
+
+        if ($this->isConfigurable($subject)) {
+            return $result;
+        }
+
+        // Cache productId
+        $productId = $subject->getId();
+
+        if (!$productId) {
+            $this->log('afterGetProductUrl() - Product->getId() returned a falsy value (' . $subject->getId() . ')');
+            return $result;
+        }
+
+        // In one client (EEPS), Product->getId() was a string /shrug
+        if (!is_numeric($productId)) {
+            $this->log('afterGetProductUrl() - Product->getId() returned a non-numeric value (' . $productId . ')');
+            return $result;
+        }
+
+        // Gets array of parent productIds if this product is used as a configurable
+        /** @var \Magento\Catalog\Api\Data\ProductInterface $parentProduct */
+        $parentProduct = $this->getFirstParentProduct((int)$productId);
+
+        if (!$parentProduct) {
+            return $result;
+        }
+
+        if (!$parentProduct instanceof Product) {
+            return $result;
+        }
+
+        // Get the attributes which make this product configurable and construct new product url
+        if ($configurableAttributes = $this->getConfigurableAttributes($parentProduct)) {
+            if (is_array($configurableAttributes)) {
+                /** @var \Magento\Catalog\Api\Data\ProductInterface $product */
+                if ($product = $this->productRepository->getById($productId)) {
+                    if ($urlPairs = $this->buildConfigurableUrlPairs($product, $configurableAttributes)) {
+                        $result = $parentProduct->getProductUrl() . '#' . implode('&amp;', $urlPairs);
                     }
-                } else {
-                    $this->log('afterGetProductUrl() - Product->getId() returned a falsy value (' . $subject->getId() . ')');
                 }
             }
         }
@@ -150,36 +169,51 @@ class ProductPlugin
      */
     public function afterGetStatus(
         Product $subject,
-        /* @noinspection PhpMissingParamTypeInspection PhpUnusedParameterInspection */ $result
+        /* @noinspection PhpMissingParamTypeInspection */ $result
     ) {
-        if ($this->config->isModuleEnabled()) {
-            if ($this->config->shouldRedirectToSearchFor404Pages() &&
-                $this->isProductViewRequest() &&
-                $result == Status::STATUS_DISABLED
-            ) {
-                // Cleanup product 'url_key'
-                $urlKey = str_replace('-', ' ', str_replace('.html', '', urldecode($subject->getUrlKey())));
-                if (!empty($urlKey)) {
-                    $this->log("afterGetStatus() - Redirecting disabled product '{$subject->getSku()}' to search.");
+        if (!$this->config->isModuleEnabled()) {
+            return $result;
+        }
 
-                    if ($this->response instanceof HttpResponse) {
-                        if ($this->shouldRedirectToCustomPageForDisabledProducts()) {
-                            $customPath = $this->urlInterface->getUrl($this->config->getRedirectDisabledUrlPath());
-                            $this->response->setRedirect($customPath)->sendResponse();
-                        } else {
-                            $queryParams = [
-                                'q'                             => $urlKey,
-                                Config::URL_PARAM_IS_404_SEARCH => true
-                            ];
+        if (!$this->config->shouldRedirectToSearchFor404Pages()) {
+            return $result;
+        }
 
-                            $searchUrl = $this->urlInterface
-                                ->addQueryParams($queryParams)
-                                ->getUrl('catalogsearch/result');
-                            $this->response->setRedirect($searchUrl)->sendResponse();
-                        }
-                    }
-                }
-            }
+        // Logic should only run on product view request
+        if (!$this->isProductViewRequest()) {
+            return $result;
+        }
+
+        // Enabled products don't need redirect
+        if ($result != Status::STATUS_DISABLED) {
+            return $result;
+        }
+
+        // Cleanup product 'url_key'
+        $urlKey = Data::cleanRequestValue($subject->getUrlKey());
+
+        if (empty($urlKey)) {
+            return $result;
+        }
+
+        if (!$this->response instanceof HttpResponse) {
+            return $result;
+        }
+
+        if ($this->shouldRedirectToCustomPageForDisabledProducts()) {
+            $customPath = $this->urlInterface->getUrl($this->config->getRedirectDisabledUrlPath());
+            $this->response->setRedirect($customPath)->sendResponse();
+        } else {
+            $queryParams = [
+                'q'                             => $urlKey,
+                Config::URL_PARAM_IS_404_SEARCH => true
+            ];
+
+            $searchUrl = $this->urlInterface
+                ->addQueryParams($queryParams)
+                ->getUrl('catalogsearch/result');
+
+            $this->response->setRedirect($searchUrl)->sendResponse();
         }
 
         return $result;
@@ -209,12 +243,10 @@ class ProductPlugin
         $parentIds = $this->getParentIds($productId);
         if (count($parentIds) > 0) {
             // Use first result
-            $productId = $parentIds[0];
+            $firstParentId = $parentIds[0];
 
-            try {
-                return $this->productRepository->getById($productId);
-            } catch (NoSuchEntityException $e) {
-                $this->log('getFirstParentProduct()', ['exception' => $e->getMessage()]);
+            if (is_numeric($firstParentId)) {
+                return $this->getProductById((int)$firstParentId);
             }
         }
 
@@ -244,6 +276,17 @@ class ProductPlugin
         Product $configurableProduct
     ) {
         return $this->catalogProductTypeConfigurable->getConfigurableAttributes($configurableProduct);
+    }
+
+    private function getProductById(int $productId)
+    {
+        try {
+            return $this->productRepository->getById($productId);
+        } catch (NoSuchEntityException $e) {
+            $this->log('getProductById()', ['productId' => $productId, 'exception' => $e->getMessage()]);
+        }
+
+        return null;
     }
 
     /**
@@ -290,10 +333,7 @@ class ProductPlugin
      */
     private function isProductViewRequest()
     {
-        return (
-            $this->request->getControllerName() == 'product' &&
-            $this->request->getActionName() == 'view'
-        );
+        return ($this->request->getControllerName() == 'product' && $this->request->getActionName() == 'view');
     }
 
     /**

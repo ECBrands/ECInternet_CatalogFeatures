@@ -9,7 +9,7 @@ namespace ECInternet\CatalogFeatures\Pricing\Catalog\Render;
 
 use Magento\Catalog\Model\Product\Pricing\Renderer\SalableResolverInterface;
 use Magento\Catalog\Pricing\Price\MinimalPriceCalculatorInterface;
-use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\Http\Context as HttpContext;
 use Magento\Framework\Pricing\Price\PriceInterface;
 use Magento\Framework\Pricing\Render\RendererPool;
 use Magento\Framework\Pricing\SaleableInterface;
@@ -21,6 +21,11 @@ use ECInternet\CatalogFeatures\Model\Config;
  */
 class FinalPriceBox extends \Magento\Catalog\Pricing\Render\FinalPriceBox
 {
+    /**
+     * @var \Magento\Framework\App\Http\Context
+     */
+    private $httpContext;
+
     /**
      * @var \ECInternet\CatalogFeatures\Model\Config
      */
@@ -34,6 +39,7 @@ class FinalPriceBox extends \Magento\Catalog\Pricing\Render\FinalPriceBox
      * @param \Magento\Framework\Pricing\Price\PriceInterface                               $price
      * @param \Magento\Framework\Pricing\Render\RendererPool                                $rendererPool
      * @param \ECInternet\CatalogFeatures\Model\Config                                      $config
+     * @param \Magento\Framework\App\Http\Context                                           $httpContext
      * @param array                                                                         $data
      * @param \Magento\Catalog\Model\Product\Pricing\Renderer\SalableResolverInterface|null $salableResolver
      * @param \Magento\Catalog\Pricing\Price\MinimalPriceCalculatorInterface|null           $minimalPriceCalculator
@@ -44,13 +50,15 @@ class FinalPriceBox extends \Magento\Catalog\Pricing\Render\FinalPriceBox
         PriceInterface $price,
         RendererPool $rendererPool,
         Config $config,
+        HttpContext $httpContext,
         array $data = [],
         ?SalableResolverInterface $salableResolver = null,
         ?MinimalPriceCalculatorInterface $minimalPriceCalculator = null
     ) {
-        $this->config = $config;
-
         parent::__construct($context, $saleableItem, $price, $rendererPool, $data, $salableResolver, $minimalPriceCalculator);
+
+        $this->config = $config;
+        $this->httpContext = $httpContext;
     }
 
     /**
@@ -82,10 +90,7 @@ class FinalPriceBox extends \Magento\Catalog\Pricing\Render\FinalPriceBox
      */
     private function isLoggedIn()
     {
-        $objectManager = ObjectManager::getInstance();
-        $httpContext = $objectManager->get(\Magento\Framework\App\Http\Context::class);
-
-        return $httpContext->getValue(\Magento\Customer\Model\Context::CONTEXT_AUTH);
+        return (bool)$this->httpContext->getValue(\Magento\Customer\Model\Context::CONTEXT_AUTH);
     }
 
     /**

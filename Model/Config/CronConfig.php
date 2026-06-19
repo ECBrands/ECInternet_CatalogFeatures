@@ -81,7 +81,7 @@ class CronConfig extends ConfigValue
         $this->runModelPath       = $runModelPath;
         $this->configValueFactory = $configValueFactory;
         $this->schedule           = $schedule;
-        $this->logger              = $logger;
+        $this->logger             = $logger;
 
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
     }
@@ -98,15 +98,31 @@ class CronConfig extends ConfigValue
 
         $time = $this->getData('groups/missing_image_report/fields/time/value');
         $this->log('afterSave()', ['time' => $time]);
+        if (!$time == null) {
+            $this->log('afterSave()', ['time' => 'null']);
+            return parent::afterSave();
+        }
 
         $frequency = $this->getData('groups/missing_image_report/fields/frequency/value');
         $this->log('afterSave()', ['frequency' => $frequency]);
+        if (!$frequency) {
+            $this->log('afterSave()', ['frequency' => 'null']);
+            return parent::afterSave();
+        }
 
         $dayOfWeek = $this->getData('groups/missing_image_report/fields/dayofweek/value');
         $this->log('afterSave()', ['dayOfWeek' => $dayOfWeek]);
+        if (!$dayOfWeek) {
+            $this->log('afterSave()', ['dayOfWeek' => 'null']);
+            return parent::afterSave();
+        }
 
         $dayOfWeekValue = $this->getDayOfWeekValue($frequency, $dayOfWeek);
         $this->log('afterSave()', ['dayOfWeekValue' => $dayOfWeekValue]);
+        if (!$dayOfWeekValue) {
+            $this->log('afterSave()', ['dayOfWeekValue' => 'null']);
+            return parent::afterSave();
+        }
 
         $cronExprArray = [
             (int)$time[1], // Minute
@@ -138,7 +154,7 @@ class CronConfig extends ConfigValue
             )->save();
 
             $this->log('afterSave() - Complete');
-        } catch (Exception $e) {
+        } catch (Exception) {
             throw new Exception("We can't save the cron expression.");
         }
 

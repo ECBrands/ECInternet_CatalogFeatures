@@ -20,7 +20,9 @@ class EmailMissingImageReport
      */
     private $config;
 
-
+    /**
+     * @var \Psr\Log\LoggerInterface
+     */
     private $logger;
 
     /**

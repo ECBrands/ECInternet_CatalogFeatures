@@ -11,6 +11,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Filesystem\Io\File;
 use Magento\Framework\Http\PhpEnvironment\Request as HttpRequest;
+use ECInternet\CatalogFeatures\Helper\Data;
 use ECInternet\CatalogFeatures\Model\Config;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -56,52 +57,42 @@ class NoRouteHandler extends \Magento\Framework\App\Router\NoRouteHandler
         $this->logger = $logger;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function process(
         RequestInterface $request
     ) {
-        $this->log('process()');
+        if (!$this->config->isModuleEnabled()) {
+            return parent::process($request);
+        }
 
-        if ($request instanceof HttpRequest) {
-            $this->log('process()', ['pathInfo' => $request->getPathInfo()]);
+        // Check if this is a product or category page and redirect to search instead.
+        if (!$this->config->shouldRedirectToSearchFor404Pages()) {
+            return parent::process($request);
+        }
 
-            try {
-                // Check if this is a product or category page and redirect to search instead.
-                if ($this->shouldRedirectToSearch()) {
-                    $requestValue = $this->baseName($request->getPathInfo());
-                    $this->log('process()', ['requestValue' => $requestValue]);
+        if (!$request instanceof HttpRequest) {
+            return parent::process($request);
+        }
 
-                    if (strpos($requestValue, '.html') !== false) {
-                        $productName = str_replace('-', ' ', str_replace('.html', '', urldecode($requestValue)));
-                        $this->log('process()', ['productName' => $productName]);
+        try {
+            $requestValue = $this->baseName($request->getPathInfo());
 
-                        if (!empty($productName)) {
-                            $request->setParams(['q' => $productName, Config::URL_PARAM_IS_404_SEARCH => true]);
-                            $request->setModuleName('catalogsearch')->setControllerName('result')->setActionName('index');
+            if (str_contains($requestValue, '.html')) {
+                if ($productName = Data::cleanRequestValue($requestValue)) {
+                    $request
+                        ->setParams(['q' => $productName, Config::URL_PARAM_IS_404_SEARCH => true])
+                        ->setModuleName('catalogsearch')
+                        ->setControllerName('result')
+                        ->setActionName('index');
 
-                            return true;
-                        }
-                    }
+                    return true;
                 }
-            } catch (Exception $e) {
-                $this->log('process()', ['exception' => $e->getMessage()]);
             }
+        } catch (Exception $e) {
+            $this->log('process()', ['exception' => $e->getMessage()]);
         }
 
         // Stock behavior.
         return parent::process($request);
-    }
-
-    /**
-     * Should we redirect to the search page when a user hits a 404?
-     *
-     * @return bool
-     */
-    private function shouldRedirectToSearch()
-    {
-        return $this->config->isModuleEnabled() && $this->config->shouldRedirectToSearchFor404Pages();
     }
 
     /**
