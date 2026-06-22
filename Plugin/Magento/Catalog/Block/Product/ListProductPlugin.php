@@ -48,9 +48,12 @@ class ListProductPlugin
      * @param \Magento\Eav\Model\Entity\Collection\AbstractCollection $resultCollection
      *
      * @return \Magento\Eav\Model\Entity\Collection\AbstractCollection $resultCollection
+     *
+     * @noinspection PhpUnusedParameterInspection
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function afterGetLoadedProductCollection(
-        /** @noinspection PhpUnusedParameterInspection */ ListProduct $subject,
+        ListProduct $subject,
         AbstractCollection $resultCollection
     ) {
         if ($this->config->isModuleEnabled()) {

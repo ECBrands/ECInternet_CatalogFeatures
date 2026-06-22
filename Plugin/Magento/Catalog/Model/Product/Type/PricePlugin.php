@@ -49,12 +49,14 @@ class PricePlugin
      * @param float|null                                $qty
      *
      * @return float
+     *
+     * @noinspection PhpMissingParamTypeInspection
      */
     public function afterGetBasePrice(
         Price $subject,
         float $result,
-        /* @noinspection PhpMissingParamTypeInspection */ $product,
-        /* @noinspection PhpMissingParamTypeInspection */ $qty = null
+        $product,
+        $qty = null
     ) {
         $this->log('afterGetBasePrice()', [
             'product' => $product->getSku(),

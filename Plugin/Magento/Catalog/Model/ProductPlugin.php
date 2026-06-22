@@ -23,6 +23,9 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Plugin for Magento\Catalog\Model\Product
+ *
+ * @SuppressWarnings(PHPMD.LongMethodName)
+ * @SuppressWarnings(PHPMD.LongVariable)
  */
 class ProductPlugin
 {
@@ -99,11 +102,15 @@ class ProductPlugin
      *
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
+     *
+     * @noinspection PhpMissingParamTypeInspection
+     * @noinspection PhpUnusedParameterInspection
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function afterGetProductUrl(
         Product $subject,
         string $result,
-        /* @noinspection PhpMissingParamTypeInspection PhpUnusedParameterInspection */ $useSid = null
+        $useSid = null
     ) {
         if (!$this->config->isModuleEnabled()) {
             return $result;
@@ -166,10 +173,12 @@ class ProductPlugin
      * @param int                            $result
      *
      * @return int
+     *
+     * @noinspection PhpMissingParamTypeInspection
      */
     public function afterGetStatus(
         Product $subject,
-        /* @noinspection PhpMissingParamTypeInspection */ $result
+        $result
     ) {
         if (!$this->config->isModuleEnabled()) {
             return $result;
