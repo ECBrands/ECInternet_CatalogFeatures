@@ -9,36 +9,41 @@
 
 	<!-- afterGetLoadedProductCollection() - Redirect to product page if there is only one product in the Category -->
 	<type name="Magento\Catalog\Block\Product\ListProduct">
-		<plugin name="ecinternet-catalogfeatures-magento-catalog-block-product-listproduct"
+		<plugin name="ecinternet_catalogfeatures-magento_catalog_block_product_listproduct"
 		        type="ECInternet\CatalogFeatures\Plugin\Magento\Catalog\Block\Product\ListProductPlugin" />
 	</type>
 
 	<!-- afterGetBasePrice() - Overrides price with tierprice -->
 	<type name="Magento\Catalog\Model\Product\Type\Price">
-		<plugin name="ecinternet-catalogfeatures-magento-catalog-model-product-type-price"
+		<plugin name="ecinternet_catalogfeatures-magento_catalog_model_product_type_price"
 		        type="ECInternet\CatalogFeatures\Plugin\Magento\Catalog\Model\Product\Type\PricePlugin" />
 	</type>
 
 	<!-- afterGetSearchQueryText() - -->
 	<type name="Magento\CatalogSearch\Block\Result">
-		<plugin name="ecinternet-catalogfeatures-magento-catalogsearch-block-result"
+		<plugin name="ecinternet_catalogfeatures-magento_catalogsearch_block_result"
 		        type="ECInternet\CatalogFeatures\Plugin\Magento\CatalogSearch\Block\ResultPlugin" />
 	</type>
 
 	<!-- afterGetJsonConfig() - Adds additional data to getJsonConfig() -->
 	<type name="Magento\ConfigurableProduct\Block\Product\View\Type\Configurable">
-		<plugin name="ecinternet-catalogfeatures-magento-configurableproduct-block-product-view-type-configurable"
+		<plugin name="ecinternet_catalogfeatures-magento_configurableproduct_block_product_view_type_configurable"
 		        type="ECInternet\CatalogFeatures\Plugin\Magento\ConfigurableProduct\Block\Product\View\Type\ConfigurablePlugin" />
 	</type>
 
-	<!-- Custom Logger - Must be injected into each class which needs it -->
-	<virtualType name="ECInternetCatalogFeaturesLogger" type="Magento\Framework\Logger\Monolog">
+	<!-- Add Logger to ProductPlugin -->
+	<type name="ECInternet\CatalogFeatures\Plugin\Magento\Catalog\Model\ProductPlugin">
 		<arguments>
-			<argument name="handlers" xsi:type="array">
-				<item name="info" xsi:type="object">ECInternet\CatalogFeatures\Logger\Handler</item>
-			</argument>
+			<argument name="logger" xsi:type="object">ECInternetCatalogFeaturesLogger</argument>
 		</arguments>
-	</virtualType>
+	</type>
+
+	<!-- Add Logger to PricePlugin -->
+	<type name="ECInternet\CatalogFeatures\Plugin\Magento\Catalog\Model\Product\Type\PricePlugin">
+		<arguments>
+			<argument name="logger" xsi:type="object">ECInternetCatalogFeaturesLogger</argument>
+		</arguments>
+	</type>
 
 	<!-- Redirect Handler -->
 	<type name="Magento\Framework\App\Router\NoRouteHandlerList">
@@ -51,4 +56,13 @@
 			</argument>
 		</arguments>
 	</type>
+
+	<!-- Custom Logger - Must be injected into each class which needs it -->
+	<virtualType name="ECInternetCatalogFeaturesLogger" type="Magento\Framework\Logger\Monolog">
+		<arguments>
+			<argument name="handlers" xsi:type="array">
+				<item name="info" xsi:type="object">ECInternet\CatalogFeatures\Logger\Handler</item>
+			</argument>
+		</arguments>
+	</virtualType>
 </config>

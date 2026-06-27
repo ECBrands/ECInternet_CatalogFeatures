@@ -4,7 +4,7 @@
 	<!-- afterGetProductUrl() - Builds direct URL to product configuration of configurable -->
 	<!-- afterGetStatus() - Redirects user to search page if product is disabled-->
 	<type name="Magento\Catalog\Model\Product">
-		<plugin name="ecinternet-catalogfeatures-magento-catalog-model-product"
+		<plugin name="ecinternet_catalogfeatures-magento_catalog_model_product"
 		        type="ECInternet\CatalogFeatures\Plugin\Magento\Catalog\Model\ProductPlugin" />
 	</type>
 </config>
