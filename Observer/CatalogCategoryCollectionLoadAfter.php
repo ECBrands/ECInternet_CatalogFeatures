@@ -13,6 +13,8 @@ use ECInternet\CatalogFeatures\Model\Config;
 
 /**
  * Observer for 'catalog_category_collection_load_after' event
+ *
+ * @SuppressWarnings(PHPMD.LongVariable)
  */
 class CatalogCategoryCollectionLoadAfter implements ObserverInterface
 {

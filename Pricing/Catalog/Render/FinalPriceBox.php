@@ -18,6 +18,8 @@ use ECInternet\CatalogFeatures\Model\Config;
 
 /**
  * Pricing Render FinalPriceBox Model
+ *
+ * @SuppressWarnings(PHPMD.LongVariable)
  */
 class FinalPriceBox extends \Magento\Catalog\Pricing\Render\FinalPriceBox
 {
